@@ -12,6 +12,7 @@ import mcp
 import httpx
 import asyncio
 from dotenv import load_dotenv
+from mcp.server.stdio import stdio_server
 from mcp.server import Server, NotificationOptions
 from mcp.types import (
     Resource,
@@ -48,8 +49,8 @@ HOMEASSISTANT_BASE_URL = "http://localhost:8123"
 if not HOMEASSISTANT_BASE_URL:
     raise ValueError("HOMEASSISTANT_BASE_URL is required. Please set it in the .env file.")
 
-server = Server("home-assistant-server")
 
+# TODO: ADD BETTER DESCRIPTION FOR THESE
 # Define models for light control
 class LightControl(BaseModel):
     entity_id: str
@@ -59,6 +60,8 @@ class LightTools(str, Enum):
     TURN_ON = "light_turn_on"
     TURN_OFF = "light_turn_off"
     GET_STATE = "light_get_state"
+
+# TODO: MIGRATE MORE FUNCTIONS
 
 # Helper function for light control
 async def turn_light_on(
@@ -151,70 +154,55 @@ async def turn_light_on(
 #         return notes[name]
 #     raise ValueError(f"Note not found: {name}")
 
-
-@server.list_tools()
-async def handle_list_tools() -> list[Tool]:
-    """
-    List available tools.
-    Each tool specifies its arguments using JSON Schema validation.
-    """
-    return [
-        Tool(
-            name=LightTools.TURN_ON,
-            description="Turn on a light with optional brightness",
-            inputSchema=LightControl.model_json_schema(),
-        )
-    ]
-
-@server.call_tool()
-async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
-    """
-    Handle tool execution requests.
-    Tools can modify server state and notify clients of changes.
-    """
-    if name == LightTools.TURN_ON:
-        result = await turn_light_on(
-            arguments["entity_id"],
-            arguments.get("brightness_pct", -1)
-        )
-        return [TextContent(
-            type="text",
-            text=f"Light control result: {result}"
-        )]
-    
-    if name != LightTools.TURN_ON:
-        raise ValueError(f"Unknown tool: {name}")
-
-    if not arguments:
-        raise ValueError("Missing arguments")
-
-
-    # Update server state
-    # notes[note_name] = content
-
-    # # Notify clients that resources have changed
-    # await server.request_context.session.send_resource_list_changed()
-
-async def main():
-    # Run the server using stdin/stdout streams
-
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        print("Server stdio initialized")
-        await server.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="home-assistant",
-                server_version="0.1.0",
-                capabilities=server.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
-                )
+async def serve():
+    server = Server("home-assistant-server")
+    @server.list_tools()
+    async def handle_list_tools() -> list[Tool]:
+        """
+        List available tools.
+        Each tool specifies its arguments using JSON Schema validation.
+        """
+        return [
+            Tool(
+                name=LightTools.TURN_ON,
+                description="Turn on a light with optional brightness",
+                inputSchema=LightControl.model_json_schema(),
             )
-        )
-        print("Server running")
+        ]
+
+    @server.call_tool()
+    async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
+        """
+        Handle tool execution requests.
+        Tools can modify server state and notify clients of changes.
+        """
+        if name == LightTools.TURN_ON:
+            result = await turn_light_on(
+                arguments["entity_id"],
+                arguments.get("brightness_pct", -1)
+            )
+            return [TextContent(
+                type="text",
+                text=f"Light control result: {result}"
+            )]
+        
+        if name != LightTools.TURN_ON:
+            raise ValueError(f"Unknown tool: {name}")
+
+        if not arguments:
+            raise ValueError("Missing arguments")
+
+
+        # Update server state
+        # notes[note_name] = content
+
+        # # Notify clients that resources have changed
+        # await server.request_context.session.send_resource_list_changed()
+    options = server.create_initialization_options()
+    async with stdio_server() as (read_stream, write_stream):
+        await server.run(read_stream, write_stream, options)
+    print("Server running")
+
 
 if __name__ == "__main__":
-    print("Starting server...")
-    # asyncio.run(main())
-    asyncio.run(turn_light_on('ceiling_lights', brightness_pct=75))
+    asyncio.run(serve())

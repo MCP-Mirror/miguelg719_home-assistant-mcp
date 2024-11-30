@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 server_params = StdioServerParameters(
     command="python",
-    args=["server_test.py"], # Optional command line arguments
+    args=["src/home_assistant_server/server.py"], # Optional command line arguments
     env=None # Optional environment variables
 )
 
@@ -29,7 +29,9 @@ async def main():
                 # Test the connection by listing tools
                 tools = await session.list_tools()
                 print(f"Available tools: {tools}")
-                
+
+                result = await session.call_tool("light_turn_on", arguments={"entity_id": "ceiling_lights", "brightness_pct": 5})
+                print(f"Tool result: {result}")
     except Exception as e:
         print(f"Error: {type(e).__name__}: {str(e)}")
 

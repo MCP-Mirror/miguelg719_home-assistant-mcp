@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python server_test.py
+python src/home_assistant_server/server.py
