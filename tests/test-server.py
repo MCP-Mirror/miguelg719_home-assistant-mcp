@@ -4,42 +4,36 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
-from home_assistant_server.server import turn_light_on
+from home_assistant_server.server import HomeAssistantServer
 
 @pytest.mark.asyncio
 async def test_turn_light_on_success():
-    # Mock the post request
+    server = HomeAssistantServer()
+    
+    # Mock the httpx client call
     mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = [{
-        'state': 'on',
-        'attributes': {'brightness': 255}  # Full brightness
-    }]
+    mock_response.json.return_value = {'state': 'on', 'attributes': {'brightness': 100}}
 
-    with patch('home_assistant_server.server.post', return_value=mock_response):
-        result = await turn_light_on('ceiling_lights', brightness_pct=100)
-        
-        assert result == {'state': 'on', 'brightness': '100'}
+    with patch('httpx.AsyncClient.post', return_value=mock_response):
+        result = await server.turn_light_on('ceiling_lights', brightness_pct=100)
+        assert result == {'state': 'on', 'attributes': {'brightness': 100}}
 
 @pytest.mark.asyncio
 async def test_turn_light_on_error():
+    server = HomeAssistantServer()
+    
     # Mock a failed request
-    with patch('home_assistant_server.server.post', side_effect=Exception('Connection error')):
-        result = await turn_light_on('ceiling_lights')
-        
-        assert result == {'state': 'error', 'message': 'Connection error'}
+    with patch('httpx.AsyncClient.post', side_effect=Exception('Connection error')):
+        with pytest.raises(Exception, match='Connection error'):
+            await server.turn_light_on('ceiling_lights')
 
 @pytest.mark.asyncio
 async def test_turn_light_on_no_brightness():
-    # Mock the post request without brightness
+    server = HomeAssistantServer()
+    
     mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = [{
-        'state': 'on',
-        'attributes': {}  # Add empty attributes dictionary
-    }]
+    mock_response.json.return_value = {'state': 'on', 'attributes': {}}
 
-    with patch('home_assistant_server.server.post', return_value=mock_response):
-        result = await turn_light_on('ceiling_lights')
-        
-        assert result == {'state': 'on'}
+    with patch('httpx.AsyncClient.post', return_value=mock_response):
+        result = await server.turn_light_on('ceiling_lights')
+        assert result == {'state': 'on', 'attributes': {}}

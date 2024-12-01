@@ -6,8 +6,8 @@ import os
 import logging
 
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.DEBUG)
+# logger = logging.getLogger(__name__)
 
 server_params = StdioServerParameters(
     command="python",
@@ -30,7 +30,7 @@ async def main():
                 tools = await session.list_tools()
                 print(f"Available tools: {tools}")
 
-                result = await session.call_tool("light_turn_on", arguments={"entity_id": "ceiling_lights", "brightness_pct": 5})
+                result = await session.call_tool("light_turn_on", arguments={"entity_id": "ceiling_lights", "brightness_pct": 25})
                 print(f"Tool result: {result}")
     except Exception as e:
         print(f"Error: {type(e).__name__}: {str(e)}")

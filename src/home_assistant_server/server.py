@@ -1,208 +1,142 @@
-#!/usr/bin/env python3
 import os
 import json
 import logging
-from datetime import datetime, timedelta
+import sys
 from collections.abc import Sequence
-from functools import lru_cache
-from typing import Any
-from requests import post, get 
-from mcp.server.models import InitializationOptions
-import mcp
+from typing import Dict, Any
 import httpx
 import asyncio
 from dotenv import load_dotenv
 from mcp.server.stdio import stdio_server
-from mcp.server import Server, NotificationOptions
-from mcp.types import (
-    Resource,
-    Tool,
-    TextContent,
-    ImageContent,
-    EmbeddedResource,
-    LoggingLevel
-)
-from pydantic import AnyUrl, BaseModel, schema
-from enum import Enum
+from mcp.server import Server
+from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 
-import sys
-import logging
+from home_assistant_server.models.entity import EntityDomain
+from home_assistant_server.services.light import LightService
+# Import other services as needed
 
 # Set up logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    stream=sys.stderr  # Write to stderr so it doesn't interfere with stdio communication
+    stream=sys.stderr
 )
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
 API_KEY = os.getenv("HOMEASSISTANT_TOKEN")
+HOMEASSISTANT_BASE_URL = os.getenv("HOMEASSISTANT_BASE_URL")
 
 if not API_KEY:
     raise ValueError("HOMEASSISTANT_TOKEN is required. Please set it in the .env file.")
-
-# HOMEASSISTANT_BASE_URL = os.getenv("HOMEASSISTANT_BASE_URL")
-HOMEASSISTANT_BASE_URL = "http://localhost:8123"
-
 if not HOMEASSISTANT_BASE_URL:
     raise ValueError("HOMEASSISTANT_BASE_URL is required. Please set it in the .env file.")
 
 
-# TODO: ADD BETTER DESCRIPTION FOR THESE
-# Define models for light control
-class LightControl(BaseModel):
-    entity_id: str
-    brightness_pct: int = -1
+class HomeAssistantServer:
+    def __init__(self):
+        self._services: Dict[EntityDomain, Any] = {}
+        self._initialize_services()
 
-class LightTools(str, Enum):
-    TURN_ON = "light_turn_on"
-    TURN_OFF = "light_turn_off"
-    GET_STATE = "light_get_state"
+    def _initialize_services(self):
+        """Initialize service handlers"""
+        self._services[EntityDomain.LIGHT] = LightService(
+            call_service=self.call_service,
+            get_state=self.get_entity_state
+        )
+        # Initialize other services here...
 
-# TODO: MIGRATE MORE FUNCTIONS
-
-# Helper function for light control
-async def turn_light_on(
-    entity_id: str,
-    brightness_pct: int = -1
-):
-    """
-    A function that takes in a string and turns on a light
-
-    Args:
-        entity_id: The name of the light to be turned on. Options are ceiling_lights, bed_light.
-        brightness_pct: The brightness level to turn the light on 
-
-    Returns:
-        A result string saying successful or unsuccesful command
-    """
-    logger.info(f"Turning on light {entity_id} with brightness {brightness_pct}")
-    url = f"{HOMEASSISTANT_BASE_URL}/api/services/light/turn_on"
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "content-type": "application/json",
-    }
-
-    # Initialize data with base configuration
-    data = json.dumps({
-        "entity_id": "light." + entity_id
-    })
-
-    # Add brightness only if valid value provided
-    if brightness_pct >= 0 and brightness_pct <= 100:
-        data = json.dumps({
-            "entity_id": "light." + entity_id,
-            "brightness_pct": brightness_pct
-        })
-
-    logger.info(f"Sending request to {url} with data: {data}")
-    
-    try:
-        response = post(url, headers=headers, data=data)
-        response.raise_for_status()  # Raise exception for bad status codes
-        
-        if len(response.json()) > 0:
-            state = response.json()[0]['state']
-            logger.info(f"Light state: {state}")
-            if state == "on":
-                # Only include brightness in response if it exists in attributes
-                if 'brightness' in response.json()[0]['attributes']:
-                    logger.info(f"Brightness: {round(response.json()[0]['attributes']['brightness']/255*100)}")
-                    return {
-                        "state": state, 
-                        "brightness": str(round(response.json()[0]['attributes']['brightness']/255 * 100))
-                    }
-                return {"state": state}
-            else:
-                return {"state": state}
-        else:
-            return {"state": "not updated"}
-            
-    except Exception as e:
-        logger.error(f"Error turning on light: {str(e)}")
-        return {"state": "error", "message": str(e)}
-
-
-# @server.list_resources()
-# async def handle_list_resources() -> list[Resource]:
-#     """
-#     List available light resources (eventually every other entity).
-#     """
-#     return [
-#         Resource(
-#             uri=AnyUrl(f"light://{name}/state"),
-#             name=f"Light {name} state",
-#             description=f"The state of the light",
-#             mimeType="application/json",
-#         )
-#         for name in notes
-#     ]
-
-# @server.read_resource()
-# async def handle_read_resource(uri: AnyUrl) -> str:
-#     """
-#     Read a specific note's content by its URI.
-#     """
-#     if uri.scheme != "note":
-#         raise ValueError(f"Unsupported URI scheme: {uri.scheme}")
-
-#     name = uri.path
-#     if name is not None:
-#         name = name.lstrip("/")
-#         return notes[name]
-#     raise ValueError(f"Note not found: {name}")
-
-async def serve():
-    server = Server("home-assistant-server")
-    @server.list_tools()
-    async def handle_list_tools() -> list[Tool]:
-        """
-        List available tools.
-        Each tool specifies its arguments using JSON Schema validation.
-        """
-        return [
-            Tool(
-                name=LightTools.TURN_ON,
-                description="Turn on a light with optional brightness",
-                inputSchema=LightControl.model_json_schema(),
+    async def get_entity_state(self, entity_id: str) -> dict:
+        """Generic method to get any entity state"""
+        url = f"{HOMEASSISTANT_BASE_URL}/api/states/{entity_id}"
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                headers={"Authorization": f"Bearer {API_KEY}"}
             )
-        ]
+            return response.json()
+
+    async def call_service(
+        self,
+        domain: EntityDomain,
+        service: str,
+        data: dict
+    ) -> dict:
+        """Generic method to call any Home Assistant service"""
+        url = f"{HOMEASSISTANT_BASE_URL}/api/services/{domain.value}/{service}"
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(
+                    url,
+                    headers={"Authorization": f"Bearer {API_KEY}"},
+                    json=data
+                )
+                return response.json()
+            except Exception as e:
+                logger.error(f"Error calling service {service} for domain {domain}: {e}")
+                raise e
+
+    def get_all_tools(self) -> list[Tool]:
+        """Collect all tools from registered services"""
+        tools = []
+        for service in self._services.values():
+            for tool_id, tool_info in service.tools.items():
+                tools.append(Tool(
+                    name=tool_info["name"],
+                    description=tool_info["description"],
+                    inputSchema=tool_info["schema"]
+                ))
+        return tools
+
+    async def handle_tool_call(self, name: str, arguments: dict) -> dict:
+        """Route tool calls to appropriate service handlers"""
+        try:
+            domain, service = name.split("_", 1)
+            domain_enum = EntityDomain(domain)
+            
+            if domain_enum not in self._services:
+                raise ValueError(f"Unsupported domain: {domain}")
+                
+            service_handler = self._services[domain_enum]
+            method = getattr(service_handler, service, None)
+            
+            if not method:
+                raise ValueError(f"Unsupported service {service} for domain {domain}")
+                
+            return await method(**arguments)
+        except Exception as e:
+            logger.error(f"Error handling tool call: {e}")
+            raise
+
+async def serve() -> None:
+    server = Server("home-assistant-server")
+    ha_server = HomeAssistantServer()
+
+    @server.list_tools()
+    async def list_tools() -> list[Tool]:
+        """List available home assistant tools."""
+        return ha_server.get_all_tools()
 
     @server.call_tool()
-    async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
-        """
-        Handle tool execution requests.
-        Tools can modify server state and notify clients of changes.
-        """
-        if name == LightTools.TURN_ON:
-            result = await turn_light_on(
-                arguments["entity_id"],
-                arguments.get("brightness_pct", -1)
-            )
+    async def call_tool(
+        name: str,
+        arguments: dict
+    ) -> Sequence[TextContent | ImageContent | EmbeddedResource]:
+        """Handle tool calls for home assistant controls."""
+        try:
+            result = await ha_server.handle_tool_call(name, arguments)
             return [TextContent(
                 type="text",
-                text=f"Light control result: {result}"
+                text=json.dumps(result, indent=2)
             )]
-        
-        if name != LightTools.TURN_ON:
-            raise ValueError(f"Unknown tool: {name}")
+        except Exception as e:
+            raise ValueError(f"Error processing home-assistant query: {str(e)}")
 
-        if not arguments:
-            raise ValueError("Missing arguments")
-
-
-        # Update server state
-        # notes[note_name] = content
-
-        # # Notify clients that resources have changed
-        # await server.request_context.session.send_resource_list_changed()
     options = server.create_initialization_options()
     async with stdio_server() as (read_stream, write_stream):
         await server.run(read_stream, write_stream, options)
-    print("Server running")
-
+    logger.info("Server running")
 
 if __name__ == "__main__":
     asyncio.run(serve())
