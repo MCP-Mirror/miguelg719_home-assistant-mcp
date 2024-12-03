@@ -32,6 +32,9 @@ async def main():
 
                 result = await session.call_tool("light_turn_on", arguments={"entity_id": "ceiling_lights", "brightness_pct": 25})
                 print(f"Tool result: {result}")
+
+                result = await session.call_tool("climate_turn_off", arguments={"entity_id": "hvac"})
+                print(f"Tool result: {result}")
     except Exception as e:
         print(f"Error: {type(e).__name__}: {str(e)}")
 

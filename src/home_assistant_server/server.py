@@ -13,6 +13,7 @@ from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 
 from home_assistant_server.models.entity import EntityDomain
 from home_assistant_server.services.light import LightService
+from home_assistant_server.services.climate import ClimateService
 # Import other services as needed
 
 # Set up logging
@@ -46,10 +47,15 @@ class HomeAssistantServer:
             get_state=self.get_entity_state
         )
         # Initialize other services here...
+        self._services[EntityDomain.CLIMATE] = ClimateService(
+            call_service=self.call_service,
+            get_state=self.get_entity_state
+        )
 
     async def get_entity_state(self, entity_id: str) -> dict:
         """Generic method to get any entity state"""
         url = f"{HOMEASSISTANT_BASE_URL}/api/states/{entity_id}"
+        print(f"Getting state for {url}")
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 url,
@@ -87,6 +93,8 @@ class HomeAssistantServer:
                     description=tool_info["description"],
                     inputSchema=tool_info["schema"]
                 ))
+            logger.info(tools)
+        logger.info(f"Service tools: {service.tools}")
         return tools
 
     async def handle_tool_call(self, name: str, arguments: dict) -> dict:
