@@ -11,7 +11,7 @@ class EntityDomain(str, Enum):
     CLIMATE = "climate"
     SWITCH = "switch"
     SENSOR = "sensor"
-    SECURITY = "security"
+    ALARM_CONTROL_PANEL = "alarm_control_panel"
 
 class EntityAttributes(BaseModel):
     """Base model for entity attributes"""

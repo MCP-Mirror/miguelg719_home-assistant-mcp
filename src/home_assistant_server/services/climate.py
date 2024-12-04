@@ -54,12 +54,12 @@ class ClimateService(BaseService[ClimateState, ClimateDescription]):
 
   tools = {
       "turn_off": {
-          "name": "climate_turn_off",
+          "name": "climate.turn_off",
           "description": "Turn off a climate entity",
           "schema": ClimateControl.get_llm_schema()
       }, 
       "set_temperature": {
-          "name": "climate_set_temperature",
+          "name": "climate.set_temperature",
           "description": "Set the temperature of a climate entity",
           "schema": ClimateControl.get_llm_schema(["temperature"])
       },
@@ -98,7 +98,7 @@ class ClimateService(BaseService[ClimateState, ClimateDescription]):
   def get_available_entities(cls) -> Dict[str, ClimateDescription]:
       """Get all available climate entities"""
       return {
-          "ceiling_climates": ClimateDescription(
+          "climate": ClimateDescription(
               domain=cls.domain,
               name="hvac",
               description="Main climate hvac",

@@ -80,12 +80,12 @@ class LightService(BaseService[LightState, LightDescription]):
   # Tool definitions for this domain
   tools = {
       "turn_on": {
-          "name": "light_turn_on",
+          "name": "light.turn_on",
           "description": "Turn on a light with optional brightness and color settings",
           "schema": LightControl.get_llm_schema(["brightness", "color", "color_temp"])
       },
       "turn_off": {
-          "name": "light_turn_off",
+          "name": "light.turn_off",
           "description": "Turn off a light",
           "schema": LightControl.get_llm_schema()
       }

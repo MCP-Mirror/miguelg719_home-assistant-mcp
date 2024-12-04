@@ -14,6 +14,7 @@ from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 from home_assistant_server.models.entity import EntityDomain
 from home_assistant_server.services.light import LightService
 from home_assistant_server.services.climate import ClimateService
+from home_assistant_server.services.alarm_control_panel import AlarmControlPanelService
 # Import other services as needed
 
 # Set up logging
@@ -48,6 +49,10 @@ class HomeAssistantServer:
         )
         # Initialize other services here...
         self._services[EntityDomain.CLIMATE] = ClimateService(
+            call_service=self.call_service,
+            get_state=self.get_entity_state
+        )
+        self._services[EntityDomain.ALARM_CONTROL_PANEL] = AlarmControlPanelService(
             call_service=self.call_service,
             get_state=self.get_entity_state
         )
@@ -100,7 +105,7 @@ class HomeAssistantServer:
     async def handle_tool_call(self, name: str, arguments: dict) -> dict:
         """Route tool calls to appropriate service handlers"""
         try:
-            domain, service = name.split("_", 1)
+            domain, service = name.split(".", 1)
             domain_enum = EntityDomain(domain)
             
             if domain_enum not in self._services:
