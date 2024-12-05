@@ -57,6 +57,9 @@ class HomeAssistantServer:
             get_state=self.get_entity_state
         )
 
+    
+    # TODO: Define a workflow for receiving all the entities from HA
+
     async def get_entity_state(self, entity_id: str) -> dict:
         """Generic method to get any entity state"""
         url = f"{HOMEASSISTANT_BASE_URL}/api/states/{entity_id}"
