@@ -1,6 +1,9 @@
 import asyncio
 import json
 
+# TODO: Add Oauth for tcp handshaking
+
+
 async def main():
     reader, writer = await asyncio.open_connection('127.0.0.1', 8888)
 
