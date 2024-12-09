@@ -68,8 +68,7 @@ gradio_cached_examples/
 gradio_queue/
 
 # Misc
-.DS_Store
-.env.local
+.DS_Store.env.local
 .env.development.local
 .env.test.local
 .env.production.local
