@@ -9,7 +9,6 @@ A MCP server project
 The server implements a simple note storage system with:
 - Custom note:// URI scheme for accessing individual notes
 - Each note resource has a name, description and text/plain mimetype
-
 ### Prompts
 
 The server provides a single prompt:
