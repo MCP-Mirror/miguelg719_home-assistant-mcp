@@ -69,6 +69,7 @@ class HomeAssistantServer:
         
     
     # TODO: Define a workflow for receiving all the entities from HA
+    # parse states from entities supported and add their services accordingly
 
     async def get_entity_state(self, entity_id: str) -> dict:
         """Generic method to get any entity state"""
