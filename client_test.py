@@ -39,10 +39,11 @@ async def main():
                 # result = await session.call_tool("alarm_control_panel-disarm", arguments={"entity_id": "security", "code": "1234"})
                 # print(f"Tool result: {result}")
                 
-                result = await session.call_tool("lock-lock", arguments={"entity_id": "front_door"})
-                print(f"Tool result: {result}")
-                
+                # result = await session.call_tool("lock-lock", arguments={"entity_id": "kitchen_door"})
+                # print(f"Tool result: {result}")
 
+                result = await session.call_tool("humidifier-turn_off", arguments={"entity_id": "dehumidifier"})
+                print(f"Tool result: {result}")
 
     except Exception as e:
         print(f"Error: {type(e).__name__}: {str(e)}")

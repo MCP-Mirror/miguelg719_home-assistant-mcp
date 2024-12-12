@@ -15,6 +15,7 @@ from home_assistant_server.models.entity import EntityDomain
 from home_assistant_server.services.light import LightService
 from home_assistant_server.services.climate import ClimateService
 from home_assistant_server.services.lock import LockService
+from home_assistant_server.services.humidifier import HumidifierService
 from home_assistant_server.services.alarm_control_panel import AlarmControlPanelService
 # Import other services as needed
 
@@ -58,6 +59,10 @@ class HomeAssistantServer:
             get_state=self.get_entity_state
         )
         self._services[EntityDomain.LOCK] = LockService(
+            call_service=self.call_service,
+            get_state=self.get_entity_state
+        )
+        self._services[EntityDomain.HUMIDIFIER] = HumidifierService(
             call_service=self.call_service,
             get_state=self.get_entity_state
         )
@@ -114,9 +119,9 @@ class HomeAssistantServer:
         """Route tool calls to appropriate service handlers"""
         try:
             domain, service = name.split("-", 1)
-            logger.info(f"\n\n{domain}, {service}")
+            # logger.info(f"\n\n{domain}, {service}")
             domain_enum = EntityDomain(domain)
-            logger.info(f"{domain_enum}")
+            # logger.info(f"{domain_enum}")
             
             if domain_enum not in self._services:
                 raise ValueError(f"Unsupported domain: {domain}")
