@@ -14,12 +14,13 @@ from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 from home_assistant_server.models.entity import EntityDomain
 from home_assistant_server.services.light import LightService
 from home_assistant_server.services.climate import ClimateService
+from home_assistant_server.services.lock import LockService
 from home_assistant_server.services.alarm_control_panel import AlarmControlPanelService
 # Import other services as needed
 
 # Set up logging
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     stream=sys.stderr
 )
@@ -56,7 +57,11 @@ class HomeAssistantServer:
             call_service=self.call_service,
             get_state=self.get_entity_state
         )
-
+        self._services[EntityDomain.LOCK] = LockService(
+            call_service=self.call_service,
+            get_state=self.get_entity_state
+        )
+        
     
     # TODO: Define a workflow for receiving all the entities from HA
 
@@ -108,8 +113,10 @@ class HomeAssistantServer:
     async def handle_tool_call(self, name: str, arguments: dict) -> dict:
         """Route tool calls to appropriate service handlers"""
         try:
-            domain, service = name.split(".", 1)
+            domain, service = name.split("-", 1)
+            logger.info(f"\n\n{domain}, {service}")
             domain_enum = EntityDomain(domain)
+            logger.info(f"{domain_enum}")
             
             if domain_enum not in self._services:
                 raise ValueError(f"Unsupported domain: {domain}")
@@ -125,7 +132,7 @@ class HomeAssistantServer:
             logger.error(f"Error handling tool call: {e}")
             raise
 
-async def serve() -> None:
+async def main() -> None:
     server = Server("home-assistant-server")
     ha_server = HomeAssistantServer()
 
@@ -155,4 +162,4 @@ async def serve() -> None:
     logger.info("Server running")
 
 if __name__ == "__main__":
-    asyncio.run(serve())
+    asyncio.run(main())

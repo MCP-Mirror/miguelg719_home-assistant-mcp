@@ -54,27 +54,27 @@ class ClimateService(BaseService[ClimateState, ClimateDescription]):
 
   tools = {
       "turn_off": {
-          "name": "climate.turn_off",
+          "name": "climate-turn_off",
           "description": "Turn off a climate entity",
           "schema": ClimateControl.get_llm_schema()
       }, 
       "set_temperature": {
-          "name": "climate.set_temperature",
+          "name": "climate-set_temperature",
           "description": "Set the temperature of a climate entity",
           "schema": ClimateControl.get_llm_schema(["temperature"])
       },
       # "set_humidity": {
-      #     "name": "climate_set_humidity",
+      #     "name": "climate-set_humidity",
       #     "description": "Set the humidity of a climate entity",
       #     "schema": ClimateControl.get_llm_schema(["target_humidity"])
       # },
       # "set_temperature_range": {
-      #     "name": "climate_set_temperature_range",
+      #     "name": "climate-set_temperature_range",
       #     "description": "Set the temperature range of a climate entity",
       #     "schema": ClimateControl.get_llm_schema(["target_temperature_high", "target_temperature_low"])
       # },
       # "set_mode": {
-      #     "name": "climate_set_mode",
+      #     "name": "climate-sset_mode",
       #     "description": "Set the mode of a climate entity",
       #     "schema": ClimateControl.get_llm_schema(["mode"])
       # }

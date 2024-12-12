@@ -62,12 +62,12 @@ class AlarmControlPanelService(BaseService[AlarmControlPanelState, AlarmControlP
     
     tools = {
       "disarm": {
-          "name": "alarm_control_panel.disarm",
+          "name": "alarm_control_panel-disarm",
           "description": "Disarm an alarm control panel entity",
           "schema": AlarmControlPanelControl.get_llm_schema(["code"])
       }, 
       "arm": {
-          "name": "alarm_control_panel.arm",
+          "name": "alarm_control_panel-arm",
           "description": "Arm the alarm control panel entity",
           "schema": AlarmControlPanelControl.get_llm_schema(["code", "alarm_mode"])
       }

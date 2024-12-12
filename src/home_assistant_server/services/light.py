@@ -80,27 +80,27 @@ class LightService(BaseService[LightState, LightDescription]):
   # Tool definitions for this domain
   tools = {
       "turn_on": {
-          "name": "light.turn_on",
+          "name": "light-turn_on",
           "description": "Turn on a light with optional brightness and color settings",
           "schema": LightControl.get_llm_schema(["brightness", "color", "color_temp"])
       },
       "turn_off": {
-          "name": "light.turn_off",
+          "name": "light-turn_off",
           "description": "Turn off a light",
           "schema": LightControl.get_llm_schema()
       }
       # "set_brightness": {
-      #     "name": "light_set_brightness",
+      #     "name": "light-set_brightness",
       #     "description": "Set light brightness",
       #     "schema": LightControl.get_llm_schema(["brightness"])
       # },
       # "set_color": {
-      #     "name": "light_set_color",
+      #     "name": "light-set_color",
       #     "description": "Set light color",
       #     "schema": LightControl.get_llm_schema(["color"])
       # },
       # "get_state": {
-      #     "name": "light_get_state",
+      #     "name": "light-get_state",
       #     "description": "Get the current state of a light",
       #     "schema": LightControl.get_llm_schema()
       # }
