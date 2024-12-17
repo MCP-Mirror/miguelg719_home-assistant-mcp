@@ -39,8 +39,6 @@ HOMEASSISTANT_BASE_URL=your_home_assistant_url_here # e.g. http://homeassistant.
 
 ## Quickstart
 
-
-
 ### Install
 
 #### Claude Desktop
