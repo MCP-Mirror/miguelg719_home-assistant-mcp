@@ -30,17 +30,17 @@ async def main():
                 tools = await session.list_tools()
                 print(f"Available tools: {tools}")
 
-                # result = await session.call_tool("light-turn_on", arguments={"entity_id": "ceiling_lights", "brightness_pct": 35})
-                # print(f"Tool result: {result}")
+                result = await session.call_tool("light-turn_on", arguments={"entity_id": "ceiling_lights", "brightness_pct": 35})
+                print(f"Tool result: {result}")
 
-                # result = await session.call_tool("climate.turn_off", arguments={"entity_id": "hvac"})
-                # print(f"Tool result: {result}")
+                result = await session.call_tool("climate.turn_off", arguments={"entity_id": "hvac"})
+                print(f"Tool result: {result}")
 
-                # result = await session.call_tool("alarm_control_panel-disarm", arguments={"entity_id": "security", "code": "1234"})
-                # print(f"Tool result: {result}")
+                result = await session.call_tool("alarm_control_panel-disarm", arguments={"entity_id": "security", "code": "1234"})
+                print(f"Tool result: {result}")
                 
-                # result = await session.call_tool("lock-lock", arguments={"entity_id": "kitchen_door"})
-                # print(f"Tool result: {result}")
+                result = await session.call_tool("lock-lock", arguments={"entity_id": "kitchen_door"})
+                print(f"Tool result: {result}")
 
                 result = await session.call_tool("humidifier-turn_off", arguments={"entity_id": "dehumidifier"})
                 print(f"Tool result: {result}")

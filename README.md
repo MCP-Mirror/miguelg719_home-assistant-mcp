@@ -1,33 +1,50 @@
-# home-assistant-server MCP server
+<div align="center">
+  
+  
+</div>
 
-A MCP server project
+# <img src="./img/ha.png" height="30" style="border-radius: 250%; margin: 0 5px;"> 🤝 <img src="./img/mcp.png" height="30" style="border-radius: 20%; margin: 0 5px;"> Home Assistant MCP Server
 
-## Components
+A Model Context Protocol (MCP) server project that integrates with Home Assistant to provide smart home control capabilities.
 
-### Resources
-
-The server implements a simple note storage system with:
-- Custom note:// URI scheme for accessing individual notes
-- Each note resource has a name, description and text/plain mimetype
 ### Prompts
 
-The server provides a single prompt:
-- summarize-notes: Creates summaries of all stored notes
-  - Optional "style" argument to control detail level (brief/detailed)
-  - Generates prompt combining all current notes with style preference
+The server provides prompts for each domain's set of tools. 
 
 ### Tools
 
-The server implements one tool:
-- add-note: Adds a new note to the server
-  - Takes "name" and "content" as required string arguments
-  - Updates server state and notifies clients of resource changes
+The server implements control for various Home Assistant domains. Currently supports:
+- 💡 Lights: Turn on/off, brightness control
+- 🌡️ Climate: Temperature control, HVAC modes
+- 🔒 Locks: Lock/unlock functionality  
+- 🚨 Alarm Control Panel: Arm/disarm security systems
+- 💧 Humidifier: Humidity control
+
+
+Example  tools include:
+
+```
+light-turn_on()
+climate-turn_off()
+alarm_control_panel-disarm()
+lock-lock()
+humidifier-turn_off()
+```
 
 ## Configuration
 
-[TODO: Add configuration details specific to your implementation]
+### Environment Variables
+
+Create a `.env` file in the root directory with:
+
+```
+HOMEASSISTANT_TOKEN=your_long_lived_access_token_here # get it from your Home Assistant instance after onboarding
+HOMEASSISTANT_BASE_URL=your_home_assistant_url_here # e.g. http://homeassistant.local:8123
+```
 
 ## Quickstart
+
+
 
 ### Install
 
@@ -44,7 +61,7 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
       "command": "uv",
       "args": [
         "--directory",
-        "/Users/miguel/Documents/home-assistant-server/home-assistant-server",
+        "/path/to/home-assistant-server",
         "run",
         "home-assistant-server"
       ]
@@ -108,3 +125,12 @@ npx @modelcontextprotocol/inspector uv --directory /Users/miguel/Documents/home-
 
 
 Upon launching, the Inspector will display a URL that you can access in your browser to begin debugging.
+
+
+## Contributing
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
