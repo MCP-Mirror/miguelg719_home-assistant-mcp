@@ -38,7 +38,7 @@ if not HOMEASSISTANT_BASE_URL:
     raise ValueError("HOMEASSISTANT_BASE_URL is required. Please set it in the .env file.")
 
 
-class HomeAssistantServer:
+class HomeAssistantMcpServer:
     def __init__(self):
         self._services: Dict[EntityDomain, Any] = {}
         self._initialize_services()
@@ -140,7 +140,7 @@ class HomeAssistantServer:
 
 async def main() -> None:
     server = Server("home-assistant-server")
-    ha_server = HomeAssistantServer()
+    ha_server = HomeAssistantMcpServer()
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:

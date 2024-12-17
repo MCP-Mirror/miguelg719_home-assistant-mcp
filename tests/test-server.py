@@ -4,11 +4,11 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
-from home_assistant_mcp.server import HomeAssistantServer
+from home_assistant_mcp.server import HomeAssistantMcpServer
 
 @pytest.mark.asyncio
 async def test_turn_light_on_success():
-    server = HomeAssistantServer()
+    server = HomeAssistantMcpServer()
     
     # Mock the httpx client call
     mock_response = Mock()
@@ -20,7 +20,7 @@ async def test_turn_light_on_success():
 
 @pytest.mark.asyncio
 async def test_turn_light_on_error():
-    server = HomeAssistantServer()
+    server = HomeAssistantMcpServer()
     
     # Mock a failed request
     with patch('httpx.AsyncClient.post', side_effect=Exception('Connection error')):
@@ -29,7 +29,7 @@ async def test_turn_light_on_error():
 
 @pytest.mark.asyncio
 async def test_turn_light_on_no_brightness():
-    server = HomeAssistantServer()
+    server = HomeAssistantMcpServer()
     
     mock_response = Mock()
     mock_response.json.return_value = {'state': 'on', 'attributes': {}}
