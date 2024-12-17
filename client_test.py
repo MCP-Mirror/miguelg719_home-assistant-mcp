@@ -9,6 +9,7 @@ import logging
 # logging.basicConfig(level=logging.DEBUG)
 # logger = logging.getLogger(__name__)
 
+# updated new dir for server.py
 server_params = StdioServerParameters(
     command="python",
     args=["src/home_assistant_mcp/server.py"], # Optional command line arguments
