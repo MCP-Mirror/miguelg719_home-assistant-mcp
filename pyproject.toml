@@ -19,4 +19,4 @@ requires = [ "hatchling",]
 build-backend = "hatchling.build"
 
 [project.scripts]
-home-assistant-server = "home_assistant_server:main"
+home-assistant-server = "home_assistant_mcp:main"

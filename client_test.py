@@ -11,7 +11,7 @@ import logging
 
 server_params = StdioServerParameters(
     command="python",
-    args=["src/home_assistant_server/server.py"], # Optional command line arguments
+    args=["src/home_assistant_mcp/server.py"], # Optional command line arguments
     env=None # Optional environment variables
 )
 

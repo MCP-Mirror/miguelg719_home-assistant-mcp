@@ -1,8 +1,3 @@
-<div align="center">
-  
-  
-</div>
-
 # <img src="./img/ha.png" height="30" style="border-radius: 250%; margin: 0 5px;"> 🤝 <img src="./img/mcp.png" height="30" style="border-radius: 20%; margin: 0 5px;"> Home Assistant MCP Server
 
 A Model Context Protocol (MCP) server project that integrates with Home Assistant to provide smart home control capabilities.

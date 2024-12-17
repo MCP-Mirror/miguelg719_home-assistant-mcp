@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
-from home_assistant_server.server import HomeAssistantServer
+from home_assistant_mcp.server import HomeAssistantServer
 
 @pytest.mark.asyncio
 async def test_turn_light_on_success():

@@ -11,12 +11,12 @@ from mcp.server.stdio import stdio_server
 from mcp.server import Server
 from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 
-from home_assistant_server.models.entity import EntityDomain
-from home_assistant_server.services.light import LightService
-from home_assistant_server.services.climate import ClimateService
-from home_assistant_server.services.lock import LockService
-from home_assistant_server.services.humidifier import HumidifierService
-from home_assistant_server.services.alarm_control_panel import AlarmControlPanelService
+from home_assistant_mcp.models.entity import EntityDomain
+from home_assistant_mcp.services.light import LightService
+from home_assistant_mcp.services.climate import ClimateService
+from home_assistant_mcp.services.lock import LockService
+from home_assistant_mcp.services.humidifier import HumidifierService
+from home_assistant_mcp.services.alarm_control_panel import AlarmControlPanelService
 # Import other services as needed
 
 # Set up logging

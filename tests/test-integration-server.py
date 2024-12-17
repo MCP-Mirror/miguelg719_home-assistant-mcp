@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
-from home_assistant_server.server import turn_light_on
+from home_assistant_mcp.server import turn_light_on
 
 @pytest.mark.asyncio
 @pytest.mark.integration  # Mark these tests as integration tests

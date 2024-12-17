@@ -140,7 +140,7 @@ async def main():
     client = MCPClient()
     try:
         # Connect to your server - replace with your actual server script path
-        await client.connect_to_server("/Users/miguel/Documents/home-assistant-server/src/home_assistant_server/server.py")
+        await client.connect_to_server("/Users/miguel/Documents/home-assistant-server/src/home_assistant_mcp/server.py")
         await client.chat_loop()
     finally:
         await client.cleanup()
