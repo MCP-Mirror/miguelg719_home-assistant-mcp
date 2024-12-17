@@ -41,6 +41,9 @@ HOMEASSISTANT_BASE_URL=your_home_assistant_url_here # e.g. http://homeassistant.
 
 ### Install
 
+Follow the instructions on how to install Home Assistant and get a long lived access token.
+- [Home Assistant Getting Started](https://www.home-assistant.io/getting-started/)
+
 #### Claude Desktop
 
 On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
