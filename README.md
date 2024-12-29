@@ -125,7 +125,9 @@ Upon launching, the Inspector will display a URL that you can access in your bro
 
 ## Contributing
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Thanks for your interest in contributing to this project! 
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. 
 
 ## License
 
